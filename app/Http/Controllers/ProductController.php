@@ -32,8 +32,14 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request) : RedirectResponse
     {
-        Product::create($request->all());
-        return redirect()->route('index')
+        $product = new Product();
+        $product->code = $request->code;
+        $product->name = $request->name;
+        $product->quantity = $request->quantity;
+        $product->price = $request->price;
+        $product->description = $request->description;
+        $product->save();
+        return redirect()->route('products.index')
                 ->withSuccess('New product is added successfully.');
     }
 
@@ -53,7 +59,7 @@ class ProductController extends Controller
     public function edit(Product $product) : View
     {
         return view('products.edit', [
-            'products' => $product
+            'product' => $product
         ]);
     }
 
@@ -62,7 +68,13 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product) : RedirectResponse
     {
-        $product->update($request->all());
+        $product = Product::find($product->id);
+        $product->code = $request->code;
+        $product->name = $request->name;
+        $product->quantity = $request->quantity;
+        $product->price = $request->price;
+        $product->description = $request->description;
+        $product->save();
         return redirect()->back()
                 ->withSuccess('Product is updated successfully.');
     }
@@ -72,6 +84,7 @@ class ProductController extends Controller
      */
     public function destroy($product) : RedirectResponse
     {
+        $product = Product::find($product);
         $product->delete();
         return redirect()->route('index')
                 ->withSuccess('Product is deleted successfully.');
